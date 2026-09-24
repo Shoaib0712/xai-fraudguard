@@ -49,8 +49,8 @@ nav_page = st.sidebar.radio(
     ]
 )
 
-if model is None or df is None:
-
+if something:
+    pass  # <--- just add pass here so Python doesn't crash
 # Prepare Feature Matrix strictly using original model features
 model_feature_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
 X_subset = df[model_feature_cols].copy()
