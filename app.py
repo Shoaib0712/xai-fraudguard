@@ -50,8 +50,6 @@ nav_page = st.sidebar.radio(
 )
 
 if model is None or df is None:
-    st.error("⚠️ Model artifacts or dataset not found! Please run `python train.py` first.")
-    st.stop()
 
 # Prepare Feature Matrix strictly using original model features
 model_feature_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
