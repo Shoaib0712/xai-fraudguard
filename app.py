@@ -29,9 +29,30 @@ def load_system_artifacts():
         df = pd.read_csv("data/creditcard.csv", nrows=3000)
         return model, scaler, df
     except Exception as e:
-        return None, None, None
+        # Fallback for Streamlit Cloud if large CSV is ignored via .gitignore
+        try:
+            model = joblib.load("models/best_model.pkl")
+            scaler = joblib.load("models/scaler.pkl")
+            np.random.seed(42)
+            nrows = 500
+            data = {
+                'Time': np.random.uniform(0, 172792, nrows),
+                'Amount': np.random.exponential(50, nrows)
+            }
+            for i in range(1, 29):
+                data[f'V{i}'] = np.random.normal(0, 1, nrows)
+            data['Class'] = np.random.choice([0, 1], size=nrows, p=[0.98, 0.02])
+            df = pd.DataFrame(data)
+            return model, scaler, df
+        except Exception as inner_e:
+            return None, None, None
 
 model, scaler, df = load_system_artifacts()
+
+# Safety check for cloud deployment
+if df is None or model is None or scaler is None:
+    st.error("⚠️ Model artifacts could not be loaded. Please ensure models/*.pkl files are committed to GitHub.")
+    st.stop()
 
 st.sidebar.title("🛡️ XAI FraudGuard")
 st.sidebar.markdown("*Adaptive Real-Time Fraud Intelligence Platform*")
